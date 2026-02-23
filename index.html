@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="برای صبا کوشولو — یک قلب ریاضی و یک پیام مخصوص." />
+  <meta name="theme-color" content="#fef7f9" />
+  <title>برای صبا کوشولو</title>
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="favicon.svg" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Lalezar&family=Marcellus&family=Italiana&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --bg: #fef7f9;
+      --surface: #fffbfc;
+      --border: #f0dce2;
+      --text: #2d1f24;
+      --muted: #8a6b73;
+      --accent: #c93d5c;
+      --accent-soft: rgba(201, 61, 92, 0.18);
+      --gold: #b8860b;
+      --gold-soft: rgba(184, 134, 11, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    ::selection {
+      background: var(--accent-soft);
+      color: var(--text);
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--accent);
+      outline-offset: 2px;
+    }
+
+    body {
+      font-family: 'Marcellus', 'Georgia', serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 3rem;
+      position: relative;
+      background-image:
+        radial-gradient(ellipse 90% 60% at 50% -5%, rgba(255, 230, 240, 0.8), transparent),
+        radial-gradient(ellipse 70% 50% at 100% 100%, rgba(255, 210, 230, 0.4), transparent),
+        radial-gradient(ellipse 50% 40% at 0% 80%, rgba(255, 220, 235, 0.3), transparent);
+    }
+
+    .meteors-wrap {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+
+    .meteors-wrap canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+
+    h1 {
+      font-family: 'Lalezar', cursive;
+      font-weight: 400;
+      font-size: clamp(1.6rem, 5vw, 2.2rem);
+      color: var(--text);
+      letter-spacing: 0.02em;
+      text-shadow: 0 2px 4px rgba(201, 61, 92, 0.12);
+    }
+
+    .card {
+      position: relative;
+      z-index: 1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 20px;
+      padding: 1.75rem;
+      width: 100%;
+      max-width: 420px;
+      box-shadow:
+        0 4px 24px rgba(201, 61, 92, 0.08),
+        0 0 0 1px rgba(255, 255, 255, 0.6) inset;
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: 14px;
+      overflow: hidden;
+      background: linear-gradient(180deg, #fffafb 0%, #fef5f7 100%);
+      margin-bottom: 1.5rem;
+      aspect-ratio: 1;
+      max-width: 372px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    #graph {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      vertical-align: middle;
+    }
+
+    .controls {
+      padding: 0.25rem 0;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      height: 6px;
+      -webkit-appearance: none;
+      appearance: none;
+      background: linear-gradient(to right, var(--accent-soft) 0%, rgba(201, 61, 92, 0.35) 50%, var(--accent-soft) 100%);
+      border-radius: 999px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff 0%, #f8e8ec 100%);
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(201, 61, 92, 0.3);
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.08);
+      box-shadow: 0 4px 16px rgba(201, 61, 92, 0.35);
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #fff 0%, #f8e8ec 100%);
+      border: 2px solid var(--accent);
+      cursor: pointer;
+      box-shadow: 0 2px 10px rgba(201, 61, 92, 0.3);
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .confetti-particle,
+      .modal {
+        animation: none !important;
+      }
+    }
+
+    .confetti-wrap {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 101;
+      opacity: 0;
+      transition: opacity 0.2s ease;
+    }
+
+    .confetti-wrap.is-active {
+      opacity: 1;
+    }
+
+    .confetti-particle {
+      position: absolute;
+      font-size: 1.35rem;
+      left: 50%;
+      top: 50%;
+      margin-left: -0.5em;
+      margin-top: -0.5em;
+      animation: confetti-burst 2.6s ease-out forwards;
+      opacity: 0;
+    }
+
+    @keyframes confetti-burst {
+      0% {
+        opacity: 0;
+        transform: translate(0, 0) scale(0.2);
+      }
+      12% {
+        opacity: 1;
+        transform: translate(var(--dx), var(--dy)) scale(1.05);
+      }
+      90% {
+        opacity: 0.85;
+        transform: translate(
+          calc(var(--dx) + var(--drift)),
+          calc(var(--dy) + 100px)
+        ) scale(0.95);
+      }
+      100% {
+        opacity: 0;
+        transform: translate(
+          calc(var(--dx) + var(--drift)),
+          calc(var(--dy) + 160px)
+        ) scale(0.7);
+      }
+    }
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(255, 245, 250, 0.75);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.4s ease, visibility 0.4s ease;
+    }
+
+    .modal-overlay.is-open {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .modal {
+      background: linear-gradient(165deg, #fffbfc 0%, #fef5f8 40%, #fceef3 100%);
+      border: 2px solid var(--border);
+      border-radius: 24px;
+      padding: 2.5rem 2.25rem 2rem;
+      max-width: 340px;
+      text-align: center;
+      position: relative;
+      box-shadow: 0 28px 56px rgba(45, 31, 36, 0.22), 0 0 0 1px rgba(255,255,255,0.9) inset;
+      transform: scale(0.9);
+      opacity: 0;
+      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+      overflow: visible;
+    }
+
+    .modal-overlay.is-open .modal {
+      transform: scale(1);
+      opacity: 1;
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 0.75rem;
+      right: 0.75rem;
+      width: 34px;
+      height: 34px;
+      border: none;
+      background: var(--accent-soft);
+      color: var(--accent);
+      border-radius: 50%;
+      font-size: 1.35rem;
+      line-height: 1;
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s;
+      z-index: 2;
+    }
+
+    .modal-close:hover {
+      background: rgba(201, 61, 92, 0.28);
+      transform: scale(1.06);
+    }
+
+    .modal-heart {
+      font-size: 3rem;
+      line-height: 1;
+      margin-bottom: 1rem;
+      text-align: center;
+    }
+
+    .modal-message {
+      font-family: 'Lalezar', cursive;
+      font-size: 1.55rem;
+      color: var(--text);
+      line-height: 1.6;
+      margin: 0;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="meteors-wrap" aria-hidden="true">
+    <canvas id="meteorsCanvas"></canvas>
+  </div>
+
+  <header>
+    <h1>⭐ برای صبا کوشولو</h1>
+  </header>
+
+  <main class="card">
+    <div class="canvas-wrap">
+      <canvas id="graph"></canvas>
+    </div>
+
+    <div class="controls">
+      <input type="range" id="slider" min="-10" max="10" step="0.1" value="0" aria-label="Slider" />
+    </div>
+  </main>
+
+  <div class="confetti-wrap" id="confetti" aria-hidden="true"></div>
+
+  <div class="modal-overlay" id="modal" aria-hidden="true">
+    <div class="modal">
+      <button type="button" class="modal-close" id="modalClose" aria-label="بستن">×</button>
+      <div class="modal-heart" aria-hidden="true">❤️</div>
+      <p class="modal-message">روزت مبارک گومبولی من</p>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const meteorsCanvas = document.getElementById('meteorsCanvas');
+      const meteorsWrap = meteorsCanvas.closest('.meteors-wrap');
+
+      function initMeteors() {
+        const ctx = meteorsCanvas.getContext('2d');
+        if (!ctx) return;
+
+        const METEOR_COUNT = 8;
+        const meteors = [];
+        let width = 0;
+        let height = 0;
+
+        function createMeteor(fromLeft, w, h) {
+          const speedPxPerSec = 140 + Math.random() * 80;
+          const angle = fromLeft
+            ? -0.42 - Math.random() * 0.25
+            : Math.PI - 0.42 - Math.random() * 0.25;
+          const vx = Math.cos(angle) * speedPxPerSec;
+          const vy = Math.sin(angle) * speedPxPerSec;
+          return {
+            x: fromLeft ? -30 : (w || 400) + 30,
+            y: Math.random() * (h || 400) * 0.85,
+            vx: vx,
+            vy: vy,
+            angle: angle,
+            angleSpeed: (Math.random() - 0.5) * 0.012,
+            tailLength: 45 + Math.random() * 35,
+            life: 0,
+            delay: Math.random() * 2000,
+            fromLeft: fromLeft,
+            tailDir: fromLeft ? 1 : -1
+          };
+        }
+
+        let lastTime = 0;
+        function loop(time) {
+          const dt = Math.min((time - lastTime) / 16.67, 4);
+          lastTime = time;
+
+          const w = width;
+          const h = height;
+          if (w <= 0 || h <= 0) {
+            requestAnimationFrame(loop);
+            return;
+          }
+          ctx.clearRect(0, 0, w, h);
+
+          meteors.forEach(function (m) {
+            if (m.delay > 0) {
+              m.delay -= dt * 16;
+              return;
+            }
+
+            const sec = dt / 60;
+            m.x += m.vx * sec;
+            m.y += m.vy * sec;
+            m.angle += m.angleSpeed * dt;
+            m.life += (1 / 420) * dt * 60;
+
+            const easeIn = 1 - Math.pow(1 - m.life, 1.4);
+            const alpha = Math.max(0, Math.min(1, easeIn * 2) * (1 - easeIn) * 4);
+            if (alpha < 0.02 || (m.fromLeft && m.x > w + 50) || (!m.fromLeft && m.x < -50)) {
+              m.life = 0;
+              m.x = m.fromLeft ? -30 : w + 30;
+              m.y = Math.random() * h * 0.85;
+              m.delay = 800 + Math.random() * 2200;
+              m.angle = -0.42 - Math.random() * 0.25;
+              m.angleSpeed = (Math.random() - 0.5) * 0.012;
+              m.tailLength = 45 + Math.random() * 35;
+              return;
+            }
+
+            ctx.save();
+            ctx.translate(m.x, m.y);
+            ctx.rotate(m.angle);
+
+            const tailLen = m.tailLength * (0.88 + 0.12 * Math.sin(time * 0.0015)) * m.tailDir;
+            const gradient = ctx.createLinearGradient(tailLen, 0, 0, 0);
+            gradient.addColorStop(0, 'rgba(255, 200, 220, 0)');
+            gradient.addColorStop(0.4, 'rgba(255, 180, 210, ' + (0.35 * alpha) + ')');
+            gradient.addColorStop(0.85, 'rgba(255, 220, 235, ' + (0.7 * alpha) + ')');
+            gradient.addColorStop(1, 'rgba(255, 255, 255, ' + alpha + ')');
+
+            ctx.strokeStyle = gradient;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.beginPath();
+            ctx.moveTo(tailLen, 0);
+            ctx.lineTo(0, 0);
+            ctx.stroke();
+
+            ctx.fillStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+            ctx.beginPath();
+            ctx.arc(0, 0, 2.5, 0, Math.PI * 2);
+            ctx.fill();
+            ctx.restore();
+          });
+
+          requestAnimationFrame(loop);
+        }
+
+        function resize() {
+          const dpr = Math.min(2, window.devicePixelRatio || 1);
+          const rect = meteorsWrap.getBoundingClientRect();
+          width = rect.width;
+          height = rect.height;
+          meteorsCanvas.width = rect.width * dpr;
+          meteorsCanvas.height = rect.height * dpr;
+          meteorsCanvas.style.width = rect.width + 'px';
+          meteorsCanvas.style.height = rect.height + 'px';
+          ctx.setTransform(1, 0, 0, 1, 0, 0);
+          ctx.scale(dpr, dpr);
+          if (meteors.length === 0) {
+            for (let i = 0; i < METEOR_COUNT; i++) {
+              meteors.push(createMeteor(i % 2 === 0, width, height));
+              meteors[i].delay = (i / METEOR_COUNT) * 1800;
+            }
+          }
+        }
+
+        resize();
+        window.addEventListener('resize', resize);
+        requestAnimationFrame(loop);
+      }
+
+      if (meteorsCanvas && meteorsWrap) initMeteors();
+    })();
+
+    (function () {
+      const canvas = document.getElementById('graph');
+      const ctx = canvas.getContext('2d');
+      const slider = document.getElementById('slider');
+      const modal = document.getElementById('modal');
+      const modalClose = document.getElementById('modalClose');
+      const confettiWrap = document.getElementById('confetti');
+
+      const CONFETTI_EMOJIS = ['❤️', '💕', '⭐', '✨', '🍓', '🦋', '💖', '🌟'];
+      const PARTICLE_COUNT = 42;
+
+      let secretTimer = null;
+
+      function runConfetti() {
+        confettiWrap.innerHTML = '';
+        confettiWrap.classList.add('is-active');
+        for (let i = 0; i < PARTICLE_COUNT; i++) {
+          const p = document.createElement('span');
+          p.className = 'confetti-particle';
+          p.textContent = CONFETTI_EMOJIS[Math.floor(Math.random() * CONFETTI_EMOJIS.length)];
+          const angle = (Math.PI * 2 * i) / PARTICLE_COUNT + Math.random() * 0.8;
+          const dist = 40 + Math.random() * 80;
+          const dx = Math.cos(angle) * dist;
+          const dy = Math.sin(angle) * dist - 20;
+          const drift = (Math.random() - 0.5) * 60;
+          p.style.setProperty('--dx', dx + 'px');
+          p.style.setProperty('--dy', dy + 'px');
+          p.style.setProperty('--drift', drift + 'px');
+          p.style.animationDelay = (Math.random() * 0.25) + 's';
+          confettiWrap.appendChild(p);
+        }
+        setTimeout(function () {
+          confettiWrap.classList.remove('is-active');
+        }, 3000);
+      }
+
+      function checkSecret() {
+        const val = parseFloat(slider.value);
+        const atEnd = val >= 9.9 || val <= -9.9;
+        if (atEnd) {
+          if (!secretTimer) {
+            secretTimer = setTimeout(function () {
+              runConfetti();
+              modal.classList.add('is-open');
+              modal.setAttribute('aria-hidden', 'false');
+              secretTimer = null;
+            }, 1000);
+          }
+        } else {
+          if (secretTimer) {
+            clearTimeout(secretTimer);
+            secretTimer = null;
+          }
+        }
+      }
+
+      modalClose.addEventListener('click', function () {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+      });
+      modal.addEventListener('click', function (e) {
+        if (e.target === modal) {
+          modal.classList.remove('is-open');
+          modal.setAttribute('aria-hidden', 'true');
+        }
+      });
+
+      const padding = 28;
+      const sqrt33 = Math.sqrt(3.3);
+      const xMin = -sqrt33;
+      const xMax = sqrt33;
+      const xRange = xMax - xMin;
+      const sampleCount = 1200;
+
+      function f(x, a) {
+        const x2 = x * x;
+        if (x2 > 3.3) return NaN;
+        const term1 = Math.pow(x * x, 1 / 3);
+        const term2 = Math.sqrt(3.3 - x2) * Math.sin(a * Math.PI * x);
+        return term1 + term2;
+      }
+
+      function draw() {
+        const a = parseFloat(slider.value);
+
+        const dpr = Math.min(2, window.devicePixelRatio || 1);
+        const rect = canvas.getBoundingClientRect();
+        const size = Math.min(rect.width, rect.height);
+        const w = Math.round(size * dpr);
+        const h = w;
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+
+        const W = canvas.width;
+        const H = canvas.height;
+        const plotLeft = padding * dpr;
+        const plotTop = padding * dpr;
+        const plotRight = W - padding * dpr;
+        const plotBottom = H - padding * dpr;
+        const plotSize = plotRight - plotLeft;
+
+        const yValues = [];
+        for (let i = 0; i <= sampleCount; i++) {
+          const x = xMin + (i / sampleCount) * xRange;
+          yValues.push(f(x, a));
+        }
+        const validY = yValues.filter(v => isFinite(v));
+        const yMin = Math.min(...validY);
+        const yMax = Math.max(...validY);
+        const yMargin = (yMax - yMin) * 0.1 || 0.5;
+        const yLo = yMin - yMargin;
+        const yHi = yMax + yMargin;
+        const yRange = yHi - yLo;
+
+        const scale = Math.min(plotSize / xRange, plotSize / yRange);
+        const plotW = xRange * scale;
+        const plotH = yRange * scale;
+        const ox = plotLeft + (plotSize - plotW) / 2 + plotW / 2;
+        const oy = plotBottom - (plotSize - plotH) / 2 - plotH / 2;
+
+        function toX(x) {
+          return ox + (x - (xMin + xMax) / 2) * scale;
+        }
+        function toY(y) {
+          return oy - (y - (yLo + yHi) / 2) * scale;
+        }
+
+        ctx.clearRect(0, 0, W, H);
+
+        ctx.strokeStyle = 'rgba(214, 77, 110, 0.12)';
+        ctx.lineWidth = 1;
+        const gridSteps = 5;
+        for (let i = 1; i < gridSteps; i++) {
+          const x = xMin + (i / gridSteps) * xRange;
+          ctx.beginPath();
+          ctx.moveTo(toX(x), plotTop);
+          ctx.lineTo(toX(x), plotBottom);
+          ctx.stroke();
+        }
+        for (let i = 1; i < gridSteps; i++) {
+          const y = yLo + (i / gridSteps) * yRange;
+          ctx.beginPath();
+          ctx.moveTo(plotLeft, toY(y));
+          ctx.lineTo(plotRight, toY(y));
+          ctx.stroke();
+        }
+
+        ctx.strokeStyle = 'rgba(214, 77, 110, 0.28)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.moveTo(toX(0), plotTop);
+        ctx.lineTo(toX(0), plotBottom);
+        ctx.moveTo(plotLeft, toY(0));
+        ctx.lineTo(plotRight, toY(0));
+        ctx.stroke();
+
+        const gradient = ctx.createLinearGradient(0, plotTop, 0, plotBottom);
+        gradient.addColorStop(0, '#e88a9e');
+        gradient.addColorStop(0.5, '#d64d6e');
+        gradient.addColorStop(1, '#c93d5c');
+        ctx.strokeStyle = gradient;
+        ctx.lineWidth = 2.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+        ctx.beginPath();
+
+        let started = false;
+        for (let i = 0; i <= sampleCount; i++) {
+          const x = xMin + (i / sampleCount) * xRange;
+          const y = f(x, a);
+          if (!isFinite(y)) {
+            started = false;
+            continue;
+          }
+          const px = toX(x);
+          const py = toY(y);
+          if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.stroke();
+
+        ctx.fillStyle = 'rgba(214, 77, 110, 0.12)';
+        ctx.beginPath();
+        started = false;
+        for (let i = 0; i <= sampleCount; i++) {
+          const x = xMin + (i / sampleCount) * xRange;
+          const y = f(x, a);
+          if (!isFinite(y)) {
+            started = false;
+            continue;
+          }
+          const px = toX(x);
+          const py = toY(y);
+          if (!started) {
+            ctx.moveTo(px, py);
+            started = true;
+          } else {
+            ctx.lineTo(px, py);
+          }
+        }
+        ctx.lineTo(toX(xMax), toY(yLo));
+        ctx.lineTo(toX(xMin), toY(yLo));
+        ctx.closePath();
+        ctx.fill();
+      }
+
+      slider.addEventListener('input', function () {
+        checkSecret();
+        draw();
+      });
+      window.addEventListener('resize', draw);
+      draw();
+    })();
+  </script>
+</body>
+</html>
