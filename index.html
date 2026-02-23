@@ -86,6 +86,20 @@
       text-shadow: 0 2px 4px rgba(201, 61, 92, 0.12);
     }
 
+    .header-hint {
+      font-family: 'Lalezar', cursive;
+      font-size: 1rem;
+      color: var(--muted);
+      margin-top: 0.35rem;
+      padding: 0.4rem 0.85rem;
+      display: inline-block;
+      background: var(--accent-soft);
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      letter-spacing: 0.02em;
+      box-shadow: 0 2px 8px rgba(201, 61, 92, 0.08);
+    }
+
     .card {
       position: relative;
       z-index: 1;
@@ -164,9 +178,13 @@
 
     @media (prefers-reduced-motion: reduce) {
       .confetti-particle,
-      .modal {
+      .modal,
+      .modal-step-enter .modal-heart,
+      .modal-step-enter .modal-message,
+      .modal-step-enter .modal-btn {
         animation: none !important;
       }
+      .modal-heart { opacity: 1; }
     }
 
     .confetti-wrap {
@@ -221,8 +239,9 @@
     .modal-overlay {
       position: fixed;
       inset: 0;
-      background: rgba(255, 245, 250, 0.75);
-      backdrop-filter: blur(4px);
+      background: rgba(255, 245, 250, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -246,37 +265,64 @@
       text-align: center;
       position: relative;
       box-shadow: 0 28px 56px rgba(45, 31, 36, 0.22), 0 0 0 1px rgba(255,255,255,0.9) inset;
-      transform: scale(0.9);
+      transform: scale(0.88) translateY(10px);
       opacity: 0;
-      transition: transform 0.45s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.4s ease;
+      transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.45s ease;
       overflow: visible;
     }
 
     .modal-overlay.is-open .modal {
-      transform: scale(1);
+      transform: scale(1) translateY(0);
       opacity: 1;
     }
 
-    .modal-close {
-      position: absolute;
-      top: 0.75rem;
-      right: 0.75rem;
-      width: 34px;
-      height: 34px;
-      border: none;
-      background: var(--accent-soft);
-      color: var(--accent);
-      border-radius: 50%;
-      font-size: 1.35rem;
-      line-height: 1;
-      cursor: pointer;
-      transition: background 0.2s, transform 0.2s;
-      z-index: 2;
+    .modal.modal-step-enter .modal-heart {
+      animation: modal-emoji-in 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
     }
 
-    .modal-close:hover {
-      background: rgba(201, 61, 92, 0.28);
-      transform: scale(1.06);
+    .modal.modal-step-enter .modal-message {
+      animation: modal-message-in 0.45s cubic-bezier(0.34, 1.2, 0.64, 1) 0.08s both;
+    }
+
+    .modal.modal-step-enter .modal-btn {
+      animation: modal-btn-in 0.4s cubic-bezier(0.34, 1.2, 0.64, 1) 0.2s both;
+    }
+
+    .modal.modal-step-enter .modal-btn:nth-child(2) {
+      animation-delay: 0.28s;
+    }
+
+    @keyframes modal-emoji-in {
+      from {
+        opacity: 0;
+        transform: scale(0.3);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes modal-message-in {
+      from {
+        opacity: 0;
+        transform: translateY(12px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes modal-btn-in {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .modal-heart {
@@ -284,6 +330,7 @@
       line-height: 1;
       margin-bottom: 1rem;
       text-align: center;
+      opacity: 1;
     }
 
     .modal-message {
@@ -294,6 +341,125 @@
       margin: 0;
       text-align: center;
     }
+
+    .modal-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.75rem;
+      justify-content: center;
+      margin-top: 1.5rem;
+    }
+
+    .modal-btn {
+      font-family: 'Lalezar', cursive;
+      font-size: 1.2rem;
+      padding: 0.6rem 1.25rem;
+      border-radius: 999px;
+      border: 2px solid var(--accent);
+      background: var(--accent-soft);
+      color: var(--accent);
+      cursor: pointer;
+      transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    }
+
+    .modal-btn:hover {
+      background: rgba(201, 61, 92, 0.28);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(201, 61, 92, 0.25);
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 1rem 0.75rem 2rem;
+        padding-left: max(0.75rem, env(safe-area-inset-left));
+        padding-right: max(0.75rem, env(safe-area-inset-right));
+        padding-bottom: max(2rem, env(safe-area-inset-bottom));
+      }
+
+      header {
+        margin-bottom: 1rem;
+      }
+
+      h1 {
+        font-size: clamp(1.35rem, 6vw, 1.85rem);
+      }
+
+      .header-hint {
+        font-size: 0.9rem;
+        padding: 0.35rem 0.7rem;
+        margin-top: 0.25rem;
+      }
+
+      .card {
+        padding: 1.25rem;
+        border-radius: 16px;
+        max-width: 100%;
+      }
+
+      .canvas-wrap {
+        margin-bottom: 1rem;
+        border-radius: 12px;
+      }
+
+      .controls {
+        padding: 0.15rem 0;
+      }
+
+      input[type="range"] {
+        height: 8px;
+      }
+
+      input[type="range"]::-webkit-slider-thumb {
+        width: 26px;
+        height: 26px;
+      }
+
+      input[type="range"]::-moz-range-thumb {
+        width: 26px;
+        height: 26px;
+      }
+
+      .modal-overlay {
+        padding: 1rem;
+        align-items: center;
+        justify-content: center;
+      }
+
+      .modal {
+        max-width: calc(100% - 2rem);
+        width: 100%;
+        padding: 1.75rem 1.5rem 1.5rem;
+        border-radius: 20px;
+      }
+
+      .modal-heart {
+        font-size: 2.5rem;
+        margin-bottom: 0.75rem;
+      }
+
+      .modal-message {
+        font-size: 1.35rem;
+        line-height: 1.5;
+      }
+
+      .modal-buttons {
+        margin-top: 1.25rem;
+        gap: 0.6rem;
+      }
+
+      .modal-btn {
+        font-size: 1.1rem;
+        padding: 0.65rem 1.15rem;
+        min-height: 44px;
+      }
+    }
+
+    @media (max-width: 360px) {
+      h1 { font-size: 1.25rem; }
+      .header-hint { font-size: 0.85rem; }
+      .modal-message { font-size: 1.2rem; }
+      .modal-btn { font-size: 1rem; }
+    }
   </style>
 </head>
 <body>
@@ -303,6 +469,7 @@
 
   <header>
     <h1>⭐ برای صبا کوشولو</h1>
+    <p class="header-hint">اسلایدر رو تا ته بکش و صبر کن</p>
   </header>
 
   <main class="card">
@@ -318,10 +485,10 @@
   <div class="confetti-wrap" id="confetti" aria-hidden="true"></div>
 
   <div class="modal-overlay" id="modal" aria-hidden="true">
-    <div class="modal">
-      <button type="button" class="modal-close" id="modalClose" aria-label="بستن">×</button>
-      <div class="modal-heart" aria-hidden="true">❤️</div>
-      <p class="modal-message">روزت مبارک گومبولی من</p>
+    <div class="modal" id="modalBox">
+      <div class="modal-heart" id="modalEmoji" aria-hidden="true"></div>
+      <p class="modal-message" id="modalMessage"></p>
+      <div class="modal-buttons" id="modalButtons"></div>
     </div>
   </div>
 
@@ -460,13 +627,44 @@
       const ctx = canvas.getContext('2d');
       const slider = document.getElementById('slider');
       const modal = document.getElementById('modal');
-      const modalClose = document.getElementById('modalClose');
+      const modalBox = document.getElementById('modalBox');
+      const modalEmoji = document.getElementById('modalEmoji');
+      const modalMessage = document.getElementById('modalMessage');
+      const modalButtons = document.getElementById('modalButtons');
       const confettiWrap = document.getElementById('confetti');
 
       const CONFETTI_EMOJIS = ['❤️', '💕', '⭐', '✨', '🍓', '🦋', '💖', '🌟'];
       const PARTICLE_COUNT = 42;
 
+      const MODAL_STEPS = [
+        null,
+        {
+          message: 'ببخشید خانوم میتونم یه لحظه وقتتونو بگیرم؟',
+          emoji: '😎',
+          buttons: ['آره', 'آدییییییی']
+        },
+        {
+          message: 'میووووووووووو',
+          emoji: '🐱',
+          buttons: ['🐈 میووووووووووو']
+        },
+        {
+          message: 'بریم مدال بعدی کوشولو؟',
+          emoji: '💃🕺',
+          buttons: ['باشه', 'باجی']
+        },
+        {
+          message: 'روزت مبارک گومبولی من',
+          emoji: '❤️',
+          buttons: ['مرسی', '🙊 مشی مشی ']
+        }
+      ];
+
       let secretTimer = null;
+      let modalStep = 0;
+      let heartAutoAnim = false;
+      let heartAnimStart = 0;
+      let autoAnimA = 0;
 
       function runConfetti() {
         confettiWrap.innerHTML = '';
@@ -491,15 +689,59 @@
         }, 3000);
       }
 
+      function triggerStepEnterAnimation() {
+        modalBox.classList.remove('modal-step-enter');
+        modalBox.offsetHeight;
+        modalBox.classList.add('modal-step-enter');
+        setTimeout(function () {
+          modalBox.classList.remove('modal-step-enter');
+        }, 600);
+      }
+
+      function renderModalStep(step) {
+        const data = MODAL_STEPS[step];
+        if (!data) return;
+        modalMessage.textContent = data.message;
+        modalEmoji.textContent = data.emoji || '';
+        modalEmoji.style.display = data.emoji ? '' : 'none';
+        modalButtons.innerHTML = '';
+        data.buttons.forEach(function (label) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          btn.className = 'modal-btn';
+          btn.textContent = label;
+          btn.addEventListener('click', function () {
+            if (step === 4) {
+              modal.classList.remove('is-open');
+              modal.setAttribute('aria-hidden', 'true');
+              modalStep = 0;
+              runConfetti();
+              startHeartAutoAnimation();
+            } else {
+              modalStep = step + 1;
+              renderModalStep(modalStep);
+              if (modalStep === 4) runConfetti();
+            }
+          });
+          modalButtons.appendChild(btn);
+        });
+        triggerStepEnterAnimation();
+      }
+
+      function openFirstModal() {
+        modalStep = 1;
+        renderModalStep(modalStep);
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+      }
+
       function checkSecret() {
         const val = parseFloat(slider.value);
         const atEnd = val >= 9.9 || val <= -9.9;
         if (atEnd) {
           if (!secretTimer) {
             secretTimer = setTimeout(function () {
-              runConfetti();
-              modal.classList.add('is-open');
-              modal.setAttribute('aria-hidden', 'false');
+              openFirstModal();
               secretTimer = null;
             }, 1000);
           }
@@ -511,16 +753,17 @@
         }
       }
 
-      modalClose.addEventListener('click', function () {
-        modal.classList.remove('is-open');
-        modal.setAttribute('aria-hidden', 'true');
-      });
-      modal.addEventListener('click', function (e) {
-        if (e.target === modal) {
-          modal.classList.remove('is-open');
-          modal.setAttribute('aria-hidden', 'true');
-        }
-      });
+      function startHeartAutoAnimation() {
+        heartAutoAnim = true;
+        heartAnimStart = Date.now();
+      }
+
+      function updateHeartAutoAnimation() {
+        if (!heartAutoAnim) return;
+        const t = (Date.now() - heartAnimStart) * 0.0008;
+        autoAnimA = 10 + 10 * (1 + Math.sin(t)) / 2;
+        draw();
+      }
 
       const padding = 28;
       const sqrt33 = Math.sqrt(3.3);
@@ -538,7 +781,7 @@
       }
 
       function draw() {
-        const a = parseFloat(slider.value);
+        const a = heartAutoAnim ? autoAnimA : parseFloat(slider.value);
 
         const dpr = Math.min(2, window.devicePixelRatio || 1);
         const rect = canvas.getBoundingClientRect();
@@ -666,6 +909,12 @@
         ctx.closePath();
         ctx.fill();
       }
+
+      function heartAnimationLoop() {
+        if (heartAutoAnim) updateHeartAutoAnimation();
+        requestAnimationFrame(heartAnimationLoop);
+      }
+      heartAnimationLoop();
 
       slider.addEventListener('input', function () {
         checkSecret();
